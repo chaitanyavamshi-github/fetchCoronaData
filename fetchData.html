@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Data</title>
+	<style>
+		table, th, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+			text-align: center;
+		}
+		.corona-data{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		#table-data{
+			margin-top: 20px;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div class="corona-data">
+		<div class="input-div">
+			<label>Select Country : </label>
+			<select id="country-name" onchange="hitApi()">
+				<option value="-1"></option>
+				<option value="india">India</option>
+				<option value="australia">Australia</option>
+				<option value="south-africa">South Africa</option>
+				<option value="england">England</option>
+			</select>	
+		</div>
+		<table id="table-data">
+		</table>
+	</div>
+</body>
+<script type="text/javascript">
+	async function hitApi() {
+		document.getElementById("table-data").innerHTML = "";
+		var countryName = document.getElementById("country-name").value;
+		const api_url = `https://api.covid19api.com/total/country/${countryName}`;
+		const response = await fetch(api_url);
+		var data = await response.json();
+		if (data.message=="Not Found") {
+			alert("No data found :(");
+			return;
+		}
+		var content = "";
+		var tableHead = `<tr><th>Active</th><th>Confirmed</th><th>Recovered</th><th>Date</th></tr>`;
+		for (var i = 0; i<data.length; i++) {
+			var trTagStart = `<tr>`;
+			var trTagEnd = `</tr>`;
+			var tdData = "";
+			tdData += `<td>${data[i].Active}</td>`;
+			tdData += `<td>${data[i].Confirmed}</td>`;
+			tdData += `<td>${data[i].Recovered}</td>`;
+			tdData += `<td>${data[i].Date}</td>`;
+			content += `${trTagStart}${tdData}${trTagEnd}`;
+		}
+		tableHead += content;
+		document.getElementById("table-data").innerHTML = tableHead;
+	}
+</script>
+</html>
